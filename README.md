@@ -1,4 +1,6 @@
 utils
 =====
 
-Miscellaneous collection of classes
+Miscellaneous collection of classes.
+
+All classes licensed under GPLv3.

@@ -1,3 +1,20 @@
+/*
+ * Emailer.java - utility class for sending email messages
+ * Copyright (C) 2012  Simon Kelly
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
 package org.snopoke.util;
 
 import static org.apache.commons.lang.Validate.isTrue;
@@ -31,25 +48,27 @@ import javax.mail.internet.MimeMultipart;
  * Utility class for sending email messages.
  * 
  * <pre>
- * {@code
- * 		Emailer m = new Emailer(host, port, username, password);
- *		m.setTLS(true);
- *		m.setDebug(true);
- *		m.setFrom("info@domain.com", "Me Myself");
- *		m.addTo("anyone@test.com", "Any Body");
- *		m.setSubject("Subject");
- *
- *		String id = UUID.randomUUID().toString();
- *		m.addAttachment(AttachmentType.RESOURCE, "classpath-image.gif", id);
- *		m.setHTMLContent("<html><body><h1>HTML</h1>\n<img src=\"cid:" + id + "\"/>\n</body></html>");
- *
- *		m.setTextContent("Text version of HTML.");
- *
- *		m.addAttachment(AttachmentType.FILE, "/Users/me/file.txt");
- *		m.send();
- *	}
+ * {
+ * 	&#064;code
+ * 	Emailer m = new Emailer(host, port, username, password);
+ * 	m.setTLS(true);
+ * 	m.setDebug(true);
+ * 	m.setFrom(&quot;info@domain.com&quot;, &quot;Me Myself&quot;);
+ * 	m.addTo(&quot;anyone@test.com&quot;, &quot;Any Body&quot;);
+ * 	m.setSubject(&quot;Subject&quot;);
+ * 
+ * 	String id = UUID.randomUUID().toString();
+ * 	m.addAttachment(AttachmentType.RESOURCE, &quot;classpath-image.gif&quot;, id);
+ * 	m.setHTMLContent(&quot;&lt;html&gt;&lt;body&gt;&lt;h1&gt;HTML&lt;/h1&gt;\n&lt;img src=\&quot;cid:&quot; + id + &quot;\&quot;/&gt;\n&lt;/body&gt;&lt;/html&gt;&quot;);
+ * 
+ * 	m.setTextContent(&quot;Text version of HTML.&quot;);
+ * 
+ * 	m.addAttachment(AttachmentType.FILE, &quot;/Users/me/file.txt&quot;);
+ * 	m.send();
+ * }
  * </pre>
  * 
+ * @author Simon Kelly <simongdkelly@gmail.com>
  */
 public class Emailer {
 
@@ -72,7 +91,7 @@ public class Emailer {
 	public Emailer(String host, int port, String username, String password) {
 		notEmpty(host, "Host can not be empty");
 		isTrue(port > 0, "Invalid port number");
-		if (username != null || password != null){
+		if (username != null || password != null) {
 			notEmpty(username, "Both username and password must be supplied or neither");
 			notEmpty(password, "Both username and password must be supplied or neither");
 		}
@@ -99,7 +118,7 @@ public class Emailer {
 	public void addTo(String email, String name) {
 		to.add(new Address(email, name));
 	}
-	
+
 	/**
 	 * @param email
 	 * @param name
@@ -108,7 +127,7 @@ public class Emailer {
 	public void addCC(String email, String name) {
 		cc.add(new Address(email, name));
 	}
-	
+
 	/**
 	 * @param email
 	 * @param name
@@ -135,8 +154,10 @@ public class Emailer {
 	}
 
 	/**
-	 * <p>Add an attachment with a specific ID. This can be used to link
-	 * attachments in the content. e.g. images in HTML content</p>
+	 * <p>
+	 * Add an attachment with a specific ID. This can be used to link
+	 * attachments in the content. e.g. images in HTML content
+	 * </p>
 	 * 
 	 * {@code <img src="cid:the-attachment-id"/> }
 	 * 
@@ -235,15 +256,15 @@ public class Emailer {
 		for (Address toAddress : to) {
 			message.addRecipient(RecipientType.TO, toAddress.getInternetAddress());
 		}
-		
+
 		for (Address toAddress : cc) {
 			message.addRecipient(RecipientType.CC, toAddress.getInternetAddress());
 		}
-		
+
 		for (Address toAddress : bcc) {
 			message.addRecipient(RecipientType.BCC, toAddress.getInternetAddress());
 		}
-		
+
 		message.setFrom(from.getInternetAddress());
 
 		if (subject != null && !subject.isEmpty())
@@ -262,7 +283,7 @@ public class Emailer {
 		Properties properties = new Properties();
 
 		Authenticator authenticator = new Authenticator();
-		if (username != null && password != null){
+		if (username != null && password != null) {
 			properties.put("mail.smtp.submitter", authenticator.getPasswordAuthentication().getUserName());
 			properties.put("mail.smtp.auth", "true");
 		}
@@ -284,7 +305,7 @@ public class Emailer {
 
 		return Session.getInstance(properties, authenticator);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Email [host=" + host + "\nport=" + port + "\nusername=" + username + "\npassword=" + password
@@ -317,7 +338,7 @@ public class Emailer {
 		public Attachment(AttachmentType type, String path, String id) {
 			notNull(type, "AttachmentType can not be null");
 			notEmpty(path, "Attachment path can not be empty");
-			
+
 			this.type = type;
 			this.path = path;
 			this.id = id;
@@ -333,7 +354,7 @@ public class Emailer {
 				break;
 			case RESOURCE:
 				URL url = this.getClass().getClassLoader().getResource(path);
-				if (url != null){
+				if (url != null) {
 					fds = new URLDataSource(url);
 					String[] split = path.split("[/\\\\]");
 					attachment.setFileName(split[split.length - 1]);
@@ -350,7 +371,7 @@ public class Emailer {
 				return null;
 			}
 		}
-		
+
 		@Override
 		public String toString() {
 			return String.format("Attachment[%s, path='%s', id='%s']\n", type.toString(), path, id);
@@ -393,7 +414,7 @@ public class Emailer {
 				throw new MessagingException("Error creating email address", e);
 			}
 		}
-		
+
 		@Override
 		public String toString() {
 			if (name != null && !name.isEmpty()) {
